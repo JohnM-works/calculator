@@ -1,7 +1,13 @@
+@font-face{
+    font-family:'digital-clock-font';
+    src: url('/fonts/digital-7.regular.ttf');
+   }
+
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    font-family: sans-serif;
 }
 
 body {
@@ -39,33 +45,36 @@ body {
 .screen-container {
     font-weight: 900;
     text-align: end;
-    padding: 12px;
+    padding: 6px;
     color: #1C121A;
     border: 2px solid #1C121A;
     border-radius: 10px;
     background: #000000;
 }
 
-.screen-header {
+.screen-container .screen-header {
     background-color: rgb(102, 102, 102);
     padding: 12px;
     text-align: end;
 }
 
 .screen-header p {
-    color: white;
+    color: rgb(255, 255, 255);
     padding-bottom: 10px;
 }
 
 .screen-output {
-    color: white;
     font-size: 3rem;
     border: 2px solid #1C121A;
     border-radius: 8px;
     background: #A4B4CD;
-    padding: 10px;
-    text-align: right;
-    
+    height: 80px;
+    padding-right: 4px;
+}
+
+.screen-output p{
+    color: rgb(48, 48, 48);
+    font-size: 3rem;
 }
 
 .button {
@@ -93,6 +102,13 @@ body {
     box-shadow: 0 3px #382c1f;
     border: 2px solid #1C121A;
     cursor: pointer;
+}
+
+.button-column button:active {
+    opacity: 1;
+    background-color: rgba(0,0,0,0.6);
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
 }
 
 button.brown {
