@@ -1,34 +1,89 @@
-let firstNumber = 0;
-let secondNumber = 0;
+let firstNumber = "";
+let secondNumber = "";
+let numOperator = "";
+let result;
 
 const numbers = document.querySelectorAll(".number-btn");
-const operators = document.querySelectorAll("operator-btn");
-const numberOutput = document.querySelector(".number-output");
+const operators = document.querySelectorAll(".operator-btn");
+const firstNumberValue = document.querySelector(".first-number-output");
+const secondNumberValue = document.querySelector(".second-number-output");
+const equals = document.querySelector(".equals-btn");
 
-function selectNumber(number) {
-  number = this.textContent;
+function subtract(firstNumber, secondNumber) {
+  result = parseFloat(firstNumber) - parseFloat(secondNumber);
+  return result;
+}
 
-  if (numberOutput.textContent.length < 10) {
-    if (numberOutput.textContent === "0") {
-      numberOutput.textContent = number;
+function multiply(firstNumber, secondNumber) {
+  result = parseFloat(firstNumber) * parseFloat(secondNumber);
+  return result;
+}
+
+function divide(firstNumber, secondNumber) {
+  result = parseFloat(firstNumber) / parseFloat(secondNumber);
+  return result;
+}
+
+function percentage(firstNumber, secondNumber) {
+  result = (parseFloat(firstNumber) / 100) * parseFloat(secondNumber);
+  return result;
+}
+
+function add(num1, num2) {
+  result = parseFloat(num1) + parseFloat(num2);
+  return result;
+}
+
+function handleNumber(num) {
+  if (firstNumber.length < 10) {
+    if (firstNumber === "0") {
+      firstNumber = `${num}`;
     } else {
-      numberOutput.textContent += `${number}`;
+      firstNumber += `${num}`;
     }
   }
 }
 
-function operation() {
-  if (operator == "+") {
-    result = firstNumber + secondNumber;
-  } else if (operator == "-") {
-    result = firstNumber - secondNumber;
-  } else if (operator == "*") {
-    result = firstNumber * secondNumber;
-  } else if (operator == "/") {
-    result = firstNumber / secondNumber;
+function handleOperator(operator) {
+  numOperator = operator;
+  secondNumber = firstNumber;
+  firstNumber = "";
+
+  console.log(operator);
+}
+
+function operate(num1, num2, numOperator) {
+  if (numOperator === "+") {
+    firstNumber = add(num1, num2);
+  } else if (numOperator === "-") {
+    firstNumber = subtract(num2, num1);
+  } else if (numOperator === "x") {
+    firstNumber = multiply(num1, num2);
+  } else if (numOperator === "÷") {
+    firstNumber = divide(num2, num1);
   }
 }
 
-numbers.forEach((number) => number.addEventListener("click", selectNumber));
+numbers.forEach((number) =>
+  number.addEventListener("click", (e) => {
+    handleNumber(e.target.textContent);
+    firstNumberValue.textContent = firstNumber;
+  })
+);
 
-operators.forEach((operator) => operator.addEventListener("click", operation));
+operators.forEach((operator) =>
+  operator.addEventListener("click", (e) => {
+    handleOperator(e.target.textContent);
+    secondNumberValue.textContent = `${secondNumber}` + `${numOperator}`;
+    firstNumberValue.textContent = firstNumber;
+  })
+);
+
+equals.addEventListener("click", () => {
+  secondNumberValue.textContent =
+    `${firstNumber}` + `${numOperator}` + `${secondNumber}` + "=";
+  if (firstNumber != "" && secondNumber != "") {
+    operate(firstNumber, secondNumber, numOperator);
+    firstNumberValue.textContent = result;
+  }
+});
