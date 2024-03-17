@@ -1,89 +1,148 @@
-let firstNumber = "";
-let secondNumber = "";
 let numOperator = "";
-let result;
+let previousNumber = "";
+let currentNumber = "";
 
 const numbers = document.querySelectorAll(".number-btn");
 const operators = document.querySelectorAll(".operator-btn");
+
 const firstNumberValue = document.querySelector(".first-number-output");
 const secondNumberValue = document.querySelector(".second-number-output");
+
 const equals = document.querySelector(".equals-btn");
+const clear = document.querySelector(".clear-btn");
+const decimal = document.querySelector(".decimal-btn");
+const numDelete = document.querySelector(".delete-btn");
+const signNum = document.querySelector(".sign-btn");
 
-function subtract(firstNumber, secondNumber) {
-  result = parseFloat(firstNumber) - parseFloat(secondNumber);
-  return result;
+decimal.addEventListener("click", addDecimals);
+numDelete.addEventListener("click", deleteNumber);
+signNum.addEventListener("click", signNumber);
+
+equals.addEventListener("click", () => {
+  if (currentNumber != "" && previousNumber != "") {
+    operate();
+  }
+});
+
+numbers.forEach((num) => {
+  num.addEventListener("click", (e) => {
+    handleNumber(e.target.textContent);
+  });
+});
+
+operators.forEach((operator) => {
+  operator.addEventListener("click", (e) => {
+    handleOperator(e.target.textContent);
+  });
+});
+
+clear.addEventListener("click", clearBtn);
+
+function clearBtn() {
+  firstNumberValue.textContent = "0";
+  secondNumberValue.textContent = "";
+  currentNumber = "";
+  previousNumber = "";
+  numOperator = "";
 }
 
-function multiply(firstNumber, secondNumber) {
-  result = parseFloat(firstNumber) * parseFloat(secondNumber);
-  return result;
+function addDecimals() {
+  if (!currentNumber.includes(".")) {
+    currentNumber += ".";
+    firstNumberValue.textContent = currentNumber;
+  }
 }
 
-function divide(firstNumber, secondNumber) {
-  result = parseFloat(firstNumber) / parseFloat(secondNumber);
-  return result;
-}
-
-function percentage(firstNumber, secondNumber) {
-  result = (parseFloat(firstNumber) / 100) * parseFloat(secondNumber);
-  return result;
-}
-
-function add(num1, num2) {
-  result = parseFloat(num1) + parseFloat(num2);
-  return result;
-}
-
-function handleNumber(num) {
-  if (firstNumber.length < 10) {
-    if (firstNumber === "0") {
-      firstNumber = `${num}`;
-    } else {
-      firstNumber += `${num}`;
+function deleteNumber() {
+  if (currentNumber !== "") {
+    currentNumber = currentNumber.slice(0, -1);
+    firstNumberValue.textContent = currentNumber;
+    if (currentNumber === "") {
+      firstNumberValue.textContent = 0;
     }
   }
 }
 
-function handleOperator(operator) {
-  numOperator = operator;
-  secondNumber = firstNumber;
-  firstNumber = "";
-
-  console.log(operator);
+function signNumber() {
+  if (!currentNumber.includes("-")) {
+    currentNumber = "-" + currentNumber;
+    firstNumberValue.textContent = currentNumber;
+  } else {
+    currentNumber = currentNumber.replace("-", "");
+    firstNumberValue.textContent = currentNumber;
+  }
 }
 
-function operate(num1, num2, numOperator) {
+function handleNumber(num) {
+  if (previousNumber !== "" && currentNumber !== "" && numOperator === "") {
+    previousNumber = "";
+    firstNumberValue.textContent = currentNumber;
+  }
+  if (currentNumber.length <= 11) {
+    currentNumber += num;
+    firstNumberValue.textContent = currentNumber;
+  }
+}
+
+function handleOperator(op) {
+  if (previousNumber === "") {
+    previousNumber = currentNumber;
+    operatorCheck(op);
+  } else if (currentNumber === "") {
+    operatorCheck(op);
+  } else {
+    operate();
+    numOperator = op;
+    firstNumberValue.textContent = "0";
+    secondNumberValue.textContent = previousNumber + " " + numOperator;
+  }
+}
+
+function operatorCheck(text) {
+  numOperator = text;
+  secondNumberValue.textContent = previousNumber + " " + numOperator;
+  firstNumberValue.textContent = "0";
+  currentNumber = "";
+}
+
+function roundNumber(num) {
+  return Math.round(num * 100000) / 100000;
+}
+
+function operate() {
+  currentNumber = Number(currentNumber);
+  previousNumber = Number(previousNumber);
+
   if (numOperator === "+") {
-    firstNumber = add(num1, num2);
+    previousNumber += currentNumber;
   } else if (numOperator === "-") {
-    firstNumber = subtract(num2, num1);
+    previousNumber -= currentNumber;
   } else if (numOperator === "x") {
-    firstNumber = multiply(num1, num2);
+    previousNumber *= currentNumber;
+  } else if (numOperator === "%") {
+    previousNumber = (previousNumber / 100) * currentNumber;
   } else if (numOperator === "÷") {
-    firstNumber = divide(num2, num1);
+    if (currentNumber <= 0) {
+      previousNumber = "Error";
+      displayResults();
+      return;
+    } else {
+      previousNumber /= currentNumber;
+    }
   }
+
+  previousNumber = roundNumber(previousNumber);
+  previousNumber = previousNumber.toString();
+  displayResults();
 }
 
-numbers.forEach((number) =>
-  number.addEventListener("click", (e) => {
-    handleNumber(e.target.textContent);
-    firstNumberValue.textContent = firstNumber;
-  })
-);
-
-operators.forEach((operator) =>
-  operator.addEventListener("click", (e) => {
-    handleOperator(e.target.textContent);
-    secondNumberValue.textContent = `${secondNumber}` + `${numOperator}`;
-    firstNumberValue.textContent = firstNumber;
-  })
-);
-
-equals.addEventListener("click", () => {
-  secondNumberValue.textContent =
-    `${firstNumber}` + `${numOperator}` + `${secondNumber}` + "=";
-  if (firstNumber != "" && secondNumber != "") {
-    operate(firstNumber, secondNumber, numOperator);
-    firstNumberValue.textContent = result;
+function displayResults() {
+  if (previousNumber.length <= 11) {
+    firstNumberValue.textContent = previousNumber;
+  } else {
+    firstNumberValue.textContent = previousNumber.slice(0, 11) + "...";
   }
-});
+  secondNumberValue.textContent = "";
+  numOperator = "";
+  currentNumber = "";
+}
